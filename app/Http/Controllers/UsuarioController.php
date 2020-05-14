@@ -101,7 +101,7 @@ class UsuarioController extends Controller
                 'estado' => 'error',
                 'codigo' => 404,
                 'mensaje' => 'El usuario no se ha logeado',
-                'errors' => $validate->errors()
+                'errores' => $validate->errors()
             );
         } else {
 
@@ -122,16 +122,11 @@ class UsuarioController extends Controller
     // ACTUALIZAR USUARIO 
     public function update($id, Request $request)
     {
-        // Comprobar si el usuario esta identificado
-        $token = $request->header('Authorization');
-        $jwtAuth = new JwtAuth();
-        $checkToken = $jwtAuth->checkToken($token);
-
         // Recoger los datos por post 
         $json = $request->input('json', null);
         $params_array = json_decode($json, true);
 
-        if ($checkToken && !empty($params_array)) {
+        if (!empty($params_array)) {
 
             // Validar los datos 
             $validate = \Validator::make($params_array, [
@@ -144,6 +139,7 @@ class UsuarioController extends Controller
             unset($params_array['id']);
             unset($params_array['password']);
             unset($params_array['created_at']);
+            unset($params_array['updated_at']);
 
             // Actualizar usuario en bbdd
             $usuario_update = Usuario::where('id', $id)->update($params_array);

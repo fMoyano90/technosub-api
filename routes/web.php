@@ -29,3 +29,6 @@ Route::get('/api/noticia/imagen/{filename}', 'NoticiaController@getImage');
 
 // RUTAS SOCIOS
 Route::resource('/api/socio', 'SocioController');
+
+// RUTA CORREO 
+Route::post('/api/contacto', 'CorreoController@correoContacto');
