@@ -160,4 +160,59 @@ class SocioController extends Controller
         }
         return response()->json($data, $data['codigo']);
     }
+
+    // SUBIR IMAGEN
+    public function upload(Request $request)
+    {
+        // Recoger la imagen de la petición
+        $imagen = $request->file('file0');
+
+        // Validar la imagen
+        $validate = \Validator::make($request->all(), [
+            'file0' => 'image|mimes:jpg,jpeg,png,gif',
+        ]);
+
+        // Guardar la imagen 
+        if ($validate->fails()) {
+            $data = [
+                'codigo' => 400,
+                'estado' => 'error',
+                'mensaje' => 'Error al subir imagen'
+            ];
+        } else {
+            $image_name = time() . $imagen->getClientOriginalName();
+
+            \Storage::disk('socios')->put($image_name, \File::get($imagen));
+
+            $data = [
+                'codigo' => 200,
+                'estado' => 'success',
+                'imagen' => $image_name,
+            ];
+        }
+        // Devolver respuesta
+        return response()->json($data, $data['codigo']);
+    }
+
+    // OBTENER IMAGEN DESDE STORAGE
+    public function getImage($filename)
+    {
+        // Comprobar si existe el fichero
+        $isset =  \Storage::disk('socios')->exists($filename);
+
+        if ($isset) {
+            // Conseguir la imagen 
+            $file = \Storage::disk('socios')->get($filename);
+            // Devolver la imgen 
+            return new Response($file, 200);
+        } else {
+            $data = [
+                'codigo' => 404,
+                'estado' => 'error',
+                'mensaje' => 'La imagen no existe'
+            ];
+        }
+
+        return response()->json($data, $data['codigo']);
+    }
 }

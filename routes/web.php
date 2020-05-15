@@ -17,18 +17,20 @@ Route::delete('api/usuario/delete/{id}', 'UsuarioController@destroy');
 // RUTAS PRODUCTOS
 Route::resource('/api/producto', 'ProductoController');
 Route::get('/api/producto/categoria/{categoria}', 'ProductoController@getProductoPorCategoria');
-Route::post('/api/producto/upload', 'ProductoController@upload')->middleware(ApiAuthMiddleware::class);
+Route::post('/api/producto/upload', 'ProductoController@upload');
 Route::get('/api/producto/imagen/{filename}', 'ProductoController@getImage');
 
 // RUTAS NOTICIAS
 Route::resource('/api/noticia', 'NoticiaController');
 Route::get('/api/noticia/categoria/{categoria}', 'NoticiaController@getNoticiaPorCategoria');
 Route::get('/api/noticia/prioridad/principal', 'NoticiaController@getNoticiaPrincipal');
-Route::post('/api/noticia/upload', 'NoticiaController@upload')->middleware(ApiAuthMiddleware::class);
+Route::post('/api/noticia/upload', 'NoticiaController@upload');
 Route::get('/api/noticia/imagen/{filename}', 'NoticiaController@getImage');
 
 // RUTAS SOCIOS
 Route::resource('/api/socio', 'SocioController');
+Route::post('/api/socio/upload', 'SocioController@upload');
+Route::get('/api/socio/imagen/{filename}', 'SocioController@getImage');
 
 // RUTA CORREO 
 Route::post('/api/contacto', 'CorreoController@correoContacto');
