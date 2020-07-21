@@ -24,21 +24,23 @@ class CorreoController extends Controller
         } else {
 
             // Enviar correo a usuario
-            $subject = "Hemos recibido tu solicitud";
+            $subject = "Hemos recibido tu compra, gracias por preferirnos.";
             $for = $params_array['email'];
             Mail::send('contactoUsuario', ['msg' => $params_array], function ($msj) use ($subject, $for) {
-                $msj->from("contacto@technosub.cl", "Daniel Piazza");
+                $msj->from("kriquelme@terramedical.cl", "Katherine Riquelme");
                 $msj->subject($subject);
                 $msj->to($for);
             });
 
             // Enviar correo a empresa
-            $subject = "Te han contactado desde el sitio web";
-            $for = 'contacto@technosub.cl';
-            Mail::send('contactoEmpresa', ['msg' => $params_array], function ($msj) use ($subject, $for) {
-                $msj->from("feedback@technosub.cl", "Sitio Web");
+            $subject = "Tienes una nueva solicitud de compra desde el sitio web";
+            $for = 'kriquelme@terramedical.cl';
+            $cc = 'fbarrios@terramedical.cl';
+            Mail::send('contactoEmpresa', ['msg' => $params_array], function ($msj) use ($subject, $for, $cc) {
+                $msj->from("ventas@terramedical.cl", "Sitio Web");
                 $msj->subject($subject);
                 $msj->to($for);
+                $msj->cc($cc);
             });
 
             $data = [
@@ -49,6 +51,62 @@ class CorreoController extends Controller
         }
 
         // Devolver respuesta
+        return response()->json($data, $data['codigo']);
+    }
+
+
+    // SUBIR ARCHIVO
+    public function upload(Request $request)
+    {
+        // Recoger el archivo de la petición
+        $file = $request->file('file0');
+
+        // Validar el archivo
+        $validate = \Validator::make($request->all(), [
+            'file0' => 'required',
+        ]);
+
+        // Guardar la archivo 
+        if ($validate->fails()) {
+            $data = [
+                'codigo' => 400,
+                'estado' => 'error',
+                'mensaje' => 'Error al subir archivo'
+            ];
+        } else {
+            $file_name = time() . $file->getClientOriginalName();
+
+            \Storage::disk('comprobantes')->put($file_name, \File::get($file));
+
+            $data = [
+                'codigo' => 200,
+                'estado' => 'success',
+                'imagen' => $file_name,
+            ];
+        }
+        // Devolver respuesta
+        return response()->json($data, $data['codigo']);
+    }
+
+    // OBTENER COMPROBANTE DESDE STORAGE
+    public function getFile($filename)
+    {
+        // Comprobar si existe el fichero
+        $isset =  \Storage::disk('comprobantes')->exists($filename);
+
+        if ($isset) {
+            // Conseguir el archivo
+            $file = \Storage::disk('comprobantes')->download($filename);
+            // Devolver el archivo
+            return $file;
+        } else {
+            $data = [
+                'codigo' => 404,
+                'estado' => 'error',
+                'mensaje' => 'El archivo no existe'
+            ];
+        }
+
         return response()->json($data, $data['codigo']);
     }
 }

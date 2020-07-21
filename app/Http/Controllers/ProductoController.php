@@ -11,7 +11,19 @@ class ProductoController extends Controller
     // OBTENER TODOS LOS PRODUCTOS
     public function index()
     {
-        $productos = Producto::all();
+        $productos = Producto::where('tipo', 'normal')->orderBy('created_at', 'desc')->get();
+
+        return response()->json([
+            'codigo' => 200,
+            'estado' => 'success',
+            'productos' => $productos
+        ], 200);
+    }
+
+    // OBTENER NOTICIAS PRINCIPALES
+    public function getProductosOferta()
+    {
+        $productos = Producto::where('tipo', 'oferta')->orderBy('created_at', 'desc')->get();
 
         return response()->json([
             'codigo' => 200,
@@ -53,11 +65,12 @@ class ProductoController extends Controller
         if (!empty($params_array)) {
             // Validar los datos 
             $validate = \Validator::make($params_array, [
+                'codigo'     => 'required',
                 'nombre'      => 'required',
-                'd_breve'     => 'required',
                 'descripcion' => 'required',
                 'imagen'   => 'required',
-                'categoria'   => 'required'
+                'tipo'   => 'required',
+                'precio'   => 'required',
             ]);
 
             if ($validate->fails()) {
@@ -72,10 +85,10 @@ class ProductoController extends Controller
                 $producto = new Producto();
                 $producto->codigo        = $params->codigo;
                 $producto->nombre        = $params->nombre;
-                $producto->d_breve       = $params->d_breve;
                 $producto->descripcion   = $params->descripcion;
                 $producto->imagen        = $params->imagen;
-                $producto->categoria     = $params->categoria;
+                $producto->tipo          = $params->tipo;
+                $producto->precio        = $params->precio;
 
                 $producto->save();
 
@@ -106,11 +119,12 @@ class ProductoController extends Controller
         if (!empty($params_array)) {
             // Validar datos
             $validate = \Validator::make($params_array, [
+                'codigo'     => 'required',
                 'nombre'      => 'required',
-                'd_breve'     => 'required',
                 'descripcion' => 'required',
                 'imagen'   => 'required',
-                'categoria'   => 'required'
+                'tipo'   => 'required',
+                'precio'   => 'required',
             ]);
 
 
@@ -169,18 +183,6 @@ class ProductoController extends Controller
             ];
         }
         return response()->json($data, $data['codigo']);
-    }
-
-    // OBTENER PRODUCTO POR CATEGORIA
-    public function getProductoPorCategoria($categoria)
-    {
-        $productos = Producto::where('categoria', $categoria)->get();
-
-        return response()->json([
-            'codigo' => 200,
-            'estado' => 'success',
-            'productos' => $productos
-        ], 200);
     }
 
     // SUBIR IMAGEN

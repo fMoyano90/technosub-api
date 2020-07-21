@@ -55,21 +55,15 @@ return [
             'visibility' => 'public',
         ],
 
-        'noticias' => [
+        'comprobantes' => [
             'driver' => 'local',
-            'root' => storage_path('app/noticias'),
+            'root' => storage_path('app/comprobantes'),
             'url' => env('APP_URL') . '/storage',
             'visibility' => 'public',
         ],
         'productos' => [
             'driver' => 'local',
             'root' => storage_path('app/productos'),
-            'url' => env('APP_URL') . '/storage',
-            'visibility' => 'public',
-        ],
-        'socios' => [
-            'driver' => 'local',
-            'root' => storage_path('app/socios'),
             'url' => env('APP_URL') . '/storage',
             'visibility' => 'public',
         ],
